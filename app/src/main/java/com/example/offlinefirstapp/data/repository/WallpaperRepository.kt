@@ -5,5 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface WallpaperRepository {
     fun getWallpapers(): Flow<List<WallpaperEntity>>
+    suspend fun getWallpaperById(id: String): WallpaperEntity?
     suspend fun refreshWallpapers()
 }

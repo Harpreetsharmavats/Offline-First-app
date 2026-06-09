@@ -11,6 +11,9 @@ interface WallpaperDao {
     @Query("SELECT * FROM wallpapers")
     fun getAllWallpapers(): Flow<List<WallpaperEntity>>
 
+    @Query("SELECT * FROM wallpapers WHERE id = :id")
+    suspend fun getWallpaperById(id: String): WallpaperEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWallpapers(wallpapers: List<WallpaperEntity>)
 

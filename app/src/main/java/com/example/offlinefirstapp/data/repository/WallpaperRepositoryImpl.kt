@@ -15,6 +15,10 @@ class WallpaperRepositoryImpl @Inject constructor(
         return dao.getAllWallpapers()
     }
 
+    override suspend fun getWallpaperById(id: String): WallpaperEntity? {
+        return dao.getWallpaperById(id)
+    }
+
     override suspend fun refreshWallpapers() {
         try {
             val remoteWallpapers = api.getWallpapers(clientId = "YOUR_UNSPLASH_ACCESS_KEY")
