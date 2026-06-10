@@ -12,6 +12,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
@@ -22,11 +24,25 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWallpaperApi(): WallpaperApi {
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWallpaperApi(okHttpClient: OkHttpClient): WallpaperApi {
         val contentType = "application/json".toMediaType()
-        val json = Json { ignoreUnknownKeys = true }
+        val json = Json { 
+            ignoreUnknownKeys = true
+            coerceInputValues = true // Useful if API returns null for non-nullable fields
+        }
         return Retrofit.Builder()
             .baseUrl(WallpaperApi.BASE_URL)
+            .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(WallpaperApi::class.java)

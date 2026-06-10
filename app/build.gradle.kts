@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.serialization)
     implementation(libs.okhttp)
+    implementation("com.squareup.okhttp3:logging-interceptor:5.3.1")
 
     // Coil
     implementation(libs.coil.compose)
