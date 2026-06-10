@@ -1,5 +1,6 @@
 package com.example.offlinefirstapp.ui.wallpaper
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -13,11 +14,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -39,10 +41,15 @@ fun WallpaperScreen(
                 title = {
                     Text(
                         "Wallpapers",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 0.5.sp
+                        )
                     )
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     ) { padding ->
@@ -52,15 +59,21 @@ fun WallpaperScreen(
             state = pullToRefreshState,
             modifier = Modifier.padding(padding)
         ) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(8.dp),
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(wallpapers, key = { it.id }) { wallpaper ->
-                    WallpaperItem(wallpaper, onClick = { onWallpaperClick(wallpaper) })
+            if (wallpapers.isEmpty() && !isRefreshing) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No wallpapers found", style = MaterialTheme.typography.bodyLarge)
+                }
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(12.dp),
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(wallpapers, key = { it.id }) { wallpaper ->
+                        WallpaperItem(wallpaper, onClick = { onWallpaperClick(wallpaper) })
+                    }
                 }
             }
         }
@@ -71,11 +84,11 @@ fun WallpaperScreen(
 fun WallpaperItem(wallpaper: WallpaperEntity, onClick: () -> Unit) {
     Card(
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.7f)
+            .aspectRatio(0.65f) // Professional vertical aspect ratio
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
@@ -83,21 +96,43 @@ fun WallpaperItem(wallpaper: WallpaperEntity, onClick: () -> Unit) {
                 contentDescription = wallpaper.description,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                placeholder = ColorPainter(Color.LightGray),
-                error = ColorPainter(Color.Gray)
+                placeholder = ColorPainter(Color.LightGray.copy(alpha = 0.3f)),
+                error = ColorPainter(Color.Gray.copy(alpha = 0.3f))
             )
             
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+            // Professional Gradient Overlay for text visibility
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.7f)
+                            ),
+                            startY = 300f // Starts gradient further down
+                        )
+                    )
+            )
+
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .padding(12.dp)
             ) {
                 Text(
-                    text = "by ${wallpaper.author}",
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    text = wallpaper.author,
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "High Res",
+                    color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.labelSmall,
                     maxLines = 1
                 )
