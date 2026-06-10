@@ -55,7 +55,8 @@ object AppModule {
             app,
             WallpaperDatabase::class.java,
             "wallpaper_db"
-        ).build()
+        )
+        .build()
     }
 
     @Provides

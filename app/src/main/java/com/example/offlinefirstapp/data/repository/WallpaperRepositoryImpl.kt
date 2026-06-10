@@ -27,17 +27,20 @@ class WallpaperRepositoryImpl @Inject constructor(
                     id = dto.id,
                     url = dto.download_url,
                     author = dto.author,
-                    description = "by ${dto.author}"
+                    description = "Captured by ${dto.author} (Remote)"
                 )
             }
+            
+            dao.clearAll() // Always clear before updating with fresh data
             if (entities.isNotEmpty()) {
-                dao.clearAll()
                 dao.insertWallpapers(entities)
+            } else {
+                insertMockDataIfEmpty()
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            // Fallback to more comprehensive mock data if DB is empty
-            //insertMockDataIfEmpty()
+            dao.clearAll() // Clear even on failure if requested to refresh
+            insertMockDataIfEmpty()
         }
     }
 
