@@ -21,32 +21,43 @@ class WallpaperRepositoryImpl @Inject constructor(
 
     override suspend fun refreshWallpapers() {
         try {
-            val remoteWallpapers = api.getWallpapers(clientId = "YOUR_UNSPLASH_ACCESS_KEY")
+            val remoteWallpapers = api.getWallpapers()
             val entities = remoteWallpapers.map { dto ->
                 WallpaperEntity(
                     id = dto.id,
-                    url = dto.urls.regular,
-                    author = dto.user.name,
-                    description = dto.alt_description
+                    url = dto.download_url,
+                    author = dto.author,
+                    description = "High resolution photo by ${dto.author}"
                 )
             }
-            dao.clearAll()
-            dao.insertWallpapers(entities)
+            if (entities.isNotEmpty()) {
+                dao.clearAll()
+                dao.insertWallpapers(entities)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
-            // If network fails and DB is empty, insert some dummy data for demo purposes
+            // Fallback to more comprehensive mock data if DB is empty
             insertMockDataIfEmpty()
         }
     }
 
     private suspend fun insertMockDataIfEmpty() {
         val mockData = listOf(
-            WallpaperEntity("1", "https://images.unsplash.com/photo-1506744038136-46273834b3fb", "Nature Lover", "Beautiful Valley"),
-            WallpaperEntity("2", "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05", "Mountain Man", "Foggy Mountains"),
-            WallpaperEntity("3", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", "Forest Walker", "Sunlight through trees"),
-            WallpaperEntity("4", "https://images.unsplash.com/photo-1501785888041-af3ef285b470", "Lake Swimmer", "Calm Lake"),
-            WallpaperEntity("5", "https://images.unsplash.com/photo-1472214103451-9374bd1c798e", "Sky Watcher", "Green fields"),
-            WallpaperEntity("6", "https://images.unsplash.com/photo-1532270660266-d47260c7521c", "Desert Nomad", "Golden Sands")
+            WallpaperEntity("10", "https://picsum.photos/id/10/1000/1500", "Paul Jarvis", "Professional Landscape"),
+            WallpaperEntity("11", "https://picsum.photos/id/11/1000/1500", "Paul Jarvis", "Mountain View"),
+            WallpaperEntity("12", "https://picsum.photos/id/12/1000/1500", "Paul Jarvis", "Nature Trails"),
+            WallpaperEntity("13", "https://picsum.photos/id/13/1000/1500", "Paul Jarvis", "Calm Waters"),
+            WallpaperEntity("14", "https://picsum.photos/id/14/1000/1500", "Paul Jarvis", "Coastal Line"),
+            WallpaperEntity("15", "https://picsum.photos/id/15/1000/1500", "Paul Jarvis", "Forest Depth"),
+            WallpaperEntity("16", "https://picsum.photos/id/16/1000/1500", "Paul Jarvis", "River Stones"),
+            WallpaperEntity("17", "https://picsum.photos/id/17/1000/1500", "Paul Jarvis", "Pathways"),
+            WallpaperEntity("18", "https://picsum.photos/id/18/1000/1500", "Paul Jarvis", "Meadows"),
+            WallpaperEntity("19", "https://picsum.photos/id/19/1000/1500", "Paul Jarvis", "Lush Greenery"),
+            WallpaperEntity("20", "https://picsum.photos/id/20/1000/1500", "Adam Gault", "Modern Architecture"),
+            WallpaperEntity("21", "https://picsum.photos/id/21/1000/1500", "Alejandro Escamilla", "Abstract Art"),
+            WallpaperEntity("22", "https://picsum.photos/id/22/1000/1500", "Alejandro Escamilla", "City Life"),
+            WallpaperEntity("23", "https://picsum.photos/id/23/1000/1500", "Alejandro Escamilla", "Minimalist Sky"),
+            WallpaperEntity("24", "https://picsum.photos/id/24/1000/1500", "Alejandro Escamilla", "Winter Frost")
         )
         dao.insertWallpapers(mockData)
     }
