@@ -25,10 +25,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
+        val logging = HttpLoggingInterceptor()
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
         return OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
+            .addInterceptor(logging)
             .build()
     }
 
@@ -38,7 +38,7 @@ object AppModule {
         val contentType = "application/json".toMediaType()
         val json = Json { 
             ignoreUnknownKeys = true
-            coerceInputValues = true // Useful if API returns null for non-nullable fields
+            coerceInputValues = true
         }
         return Retrofit.Builder()
             .baseUrl(WallpaperApi.BASE_URL)
@@ -54,8 +54,9 @@ object AppModule {
         return Room.databaseBuilder(
             app,
             WallpaperDatabase::class.java,
-            "wallpaper_db"
+            "wallpaper_db_v3" // Wipes old DB entirely by using a new name
         )
+        .fallbackToDestructiveMigration()
         .build()
     }
 

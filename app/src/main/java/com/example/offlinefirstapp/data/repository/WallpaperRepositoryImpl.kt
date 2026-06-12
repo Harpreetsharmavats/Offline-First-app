@@ -23,41 +23,44 @@ class WallpaperRepositoryImpl @Inject constructor(
         try {
             val remoteWallpapers = api.getWallpapers()
             val entities = remoteWallpapers.map { dto ->
+                // Use a smaller version for the grid
+                val optimizedUrl = "https://picsum.photos/id/${dto.id}/800/1200"
+
                 WallpaperEntity(
                     id = dto.id,
-                    url = dto.download_url,
+                    url = optimizedUrl,
                     author = dto.author,
-                    description = "Captured by ${dto.author} (Remote)"
+                    description = "NEW LIVE: ${dto.author}"
                 )
             }
             
-            dao.clearAll() // Always clear before updating with fresh data
+            dao.clearAll() 
             if (entities.isNotEmpty()) {
                 dao.insertWallpapers(entities)
             } else {
-                insertMockDataIfEmpty()
+                insertMockData()
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            dao.clearAll() // Clear even on failure if requested to refresh
-            insertMockDataIfEmpty()
+            dao.clearAll() 
+            insertMockData()
         }
     }
 
-    private suspend fun insertMockDataIfEmpty() {
+    private suspend fun insertMockData() {
         val mockData = listOf(
-            WallpaperEntity("101", "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1000", "Nature Enthusiast", "Breathtaking Valley View"),
-            WallpaperEntity("102", "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1000", "Mountain Explorer", "Ethereal Mountain Mist"),
-            WallpaperEntity("103", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1000", "Forest Wanderer", "Golden Sunbeams in Ancient Woods"),
-            WallpaperEntity("104", "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1000", "Serenity Seeker", "Crystal Clear Alpine Lake"),
-            WallpaperEntity("105", "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1000", "Field Dreamer", "Infinite Rolling Green Hills"),
-            WallpaperEntity("106", "https://images.unsplash.com/photo-1532270660266-d47260c7521c?q=80&w=1000", "Desert Nomad", "Majestic Sand Dunes at Sunset"),
-            WallpaperEntity("107", "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1000", "Sky Watcher", "Vibrant Sunset over Rural Landscape"),
-            WallpaperEntity("108", "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000", "Peak Climber", "Snow-Capped Mountain Range"),
-            WallpaperEntity("109", "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1000", "Park Walker", "Lush Summer Park Canopy"),
-            WallpaperEntity("110", "https://images.unsplash.com/photo-1433086563844-c71097b148fa?q=80&w=1000", "Waterfall Fan", "Tropical Jungle Waterfall"),
-            WallpaperEntity("111", "https://images.unsplash.com/photo-1426604966848-d7adac402bc4?q=80&w=1000", "Island Hopper", "Dramatic Coastal Cliffs"),
-            WallpaperEntity("112", "https://images.unsplash.com/photo-1475924156734-496f6acc671e?q=80&w=1000", "Beach Lover", "Ocean Waves at Dawn")
+            WallpaperEntity("n1", "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1000", "Nature", "NEW OFFLINE: Valley"),
+            WallpaperEntity("n2", "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1000", "Mountain", "NEW OFFLINE: Mist"),
+            WallpaperEntity("n3", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1000", "Forest", "NEW OFFLINE: Woods"),
+            WallpaperEntity("n4", "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1000", "Lake", "NEW OFFLINE: Alpine"),
+            WallpaperEntity("n5", "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1000", "Field", "NEW OFFLINE: Hills"),
+            WallpaperEntity("n6", "https://images.unsplash.com/photo-1532270660266-d47260c7521c?q=80&w=1000", "Desert", "NEW OFFLINE: Dunes"),
+            WallpaperEntity("n7", "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1000", "Sky", "NEW OFFLINE: Sunset"),
+            WallpaperEntity("n8", "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000", "Peaks", "NEW OFFLINE: Snow"),
+            WallpaperEntity("n9", "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1000", "Park", "NEW OFFLINE: Canopy"),
+            WallpaperEntity("n10", "https://images.unsplash.com/photo-1433086563844-c71097b148fa?q=80&w=1000", "Waterfall", "NEW OFFLINE: Jungle"),
+            WallpaperEntity("n11", "https://images.unsplash.com/photo-1426604966848-d7adac402bc4?q=80&w=1000", "Island", "NEW OFFLINE: Cliffs"),
+            WallpaperEntity("n12", "https://images.unsplash.com/photo-1475924156734-496f6acc671e?q=80&w=1000", "Beach", "NEW OFFLINE: Dawn")
         )
         dao.insertWallpapers(mockData)
     }
