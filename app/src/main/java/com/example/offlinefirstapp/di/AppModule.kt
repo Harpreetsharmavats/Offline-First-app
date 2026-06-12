@@ -54,7 +54,7 @@ object AppModule {
         return Room.databaseBuilder(
             app,
             WallpaperDatabase::class.java,
-            "wallpaper_db_v3" // Wipes old DB entirely by using a new name
+            "wallpaper_fresh_db_v4" // Absolute fresh start
         )
         .fallbackToDestructiveMigration()
         .build()

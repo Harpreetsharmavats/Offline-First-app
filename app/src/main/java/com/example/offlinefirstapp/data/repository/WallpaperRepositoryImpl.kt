@@ -1,5 +1,6 @@
 package com.example.offlinefirstapp.data.repository
 
+import android.util.Log
 import com.example.offlinefirstapp.data.local.WallpaperDao
 import com.example.offlinefirstapp.data.local.WallpaperEntity
 import com.example.offlinefirstapp.data.remote.WallpaperApi
@@ -20,48 +21,49 @@ class WallpaperRepositoryImpl @Inject constructor(
     }
 
     override suspend fun refreshWallpapers() {
+        Log.d("WallpaperRepo", "Refreshing wallpapers...")
         try {
-            val remoteWallpapers = api.getWallpapers()
-            val entities = remoteWallpapers.map { dto ->
-                // Use a smaller version for the grid
-                val optimizedUrl = "https://picsum.photos/id/${dto.id}/800/1200"
+            // FORCE CLEAR before anything else
+            dao.clearAll()
+            Log.d("WallpaperRepo", "Database cleared.")
 
+            val remoteWallpapers = api.getWallpapers()
+            Log.d("WallpaperRepo", "Fetched ${remoteWallpapers.size} from API")
+
+            val entities = remoteWallpapers.map { dto ->
+                val optimizedUrl = "https://picsum.photos/id/${dto.id}/800/1200"
                 WallpaperEntity(
                     id = dto.id,
                     url = optimizedUrl,
                     author = dto.author,
-                    description = "NEW LIVE: ${dto.author}"
+                    description = "LATEST API DATA: ${dto.author}"
                 )
             }
             
-            dao.clearAll() 
             if (entities.isNotEmpty()) {
                 dao.insertWallpapers(entities)
+                Log.d("WallpaperRepo", "Inserted ${entities.size} new records")
             } else {
+                Log.d("WallpaperRepo", "API returned empty, using mock data")
                 insertMockData()
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("WallpaperRepo", "Error refreshing", e)
             dao.clearAll() 
             insertMockData()
         }
     }
 
     private suspend fun insertMockData() {
+        Log.d("WallpaperRepo", "Inserting mock data...")
         val mockData = listOf(
-            WallpaperEntity("n1", "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1000", "Nature", "NEW OFFLINE: Valley"),
-            WallpaperEntity("n2", "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1000", "Mountain", "NEW OFFLINE: Mist"),
-            WallpaperEntity("n3", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1000", "Forest", "NEW OFFLINE: Woods"),
-            WallpaperEntity("n4", "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1000", "Lake", "NEW OFFLINE: Alpine"),
-            WallpaperEntity("n5", "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1000", "Field", "NEW OFFLINE: Hills"),
-            WallpaperEntity("n6", "https://images.unsplash.com/photo-1532270660266-d47260c7521c?q=80&w=1000", "Desert", "NEW OFFLINE: Dunes"),
-            WallpaperEntity("n7", "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1000", "Sky", "NEW OFFLINE: Sunset"),
-            WallpaperEntity("n8", "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000", "Peaks", "NEW OFFLINE: Snow"),
-            WallpaperEntity("n9", "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1000", "Park", "NEW OFFLINE: Canopy"),
-            WallpaperEntity("n10", "https://images.unsplash.com/photo-1433086563844-c71097b148fa?q=80&w=1000", "Waterfall", "NEW OFFLINE: Jungle"),
-            WallpaperEntity("n11", "https://images.unsplash.com/photo-1426604966848-d7adac402bc4?q=80&w=1000", "Island", "NEW OFFLINE: Cliffs"),
-            WallpaperEntity("n12", "https://images.unsplash.com/photo-1475924156734-496f6acc671e?q=80&w=1000", "Beach", "NEW OFFLINE: Dawn")
+            WallpaperEntity("final1", "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1000", "Final Fallback", "LATEST OFFLINE 1"),
+            WallpaperEntity("final2", "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1000", "Final Fallback", "LATEST OFFLINE 2"),
+            WallpaperEntity("final3", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1000", "Final Fallback", "LATEST OFFLINE 3"),
+            WallpaperEntity("final4", "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1000", "Final Fallback", "LATEST OFFLINE 4"),
+            WallpaperEntity("final5", "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000", "Final Fallback", "LATEST OFFLINE 5")
         )
         dao.insertWallpapers(mockData)
+        Log.d("WallpaperRepo", "Mock data inserted")
     }
 }

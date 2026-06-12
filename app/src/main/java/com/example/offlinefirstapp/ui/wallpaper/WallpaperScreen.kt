@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -47,6 +49,14 @@ fun WallpaperScreen(
                         )
                     )
                 },
+                actions = {
+                    IconButton(onClick = { viewModel.refresh() }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Force Reset"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -61,7 +71,7 @@ fun WallpaperScreen(
         ) {
             if (wallpapers.isEmpty() && !isRefreshing) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No wallpapers found", style = MaterialTheme.typography.bodyLarge)
+                    Text("Pull to fetch new data", style = MaterialTheme.typography.bodyLarge)
                 }
             } else {
                 LazyVerticalGrid(
@@ -88,7 +98,7 @@ fun WallpaperItem(wallpaper: WallpaperEntity, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.65f) // Professional vertical aspect ratio
+            .aspectRatio(0.65f)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
@@ -100,7 +110,6 @@ fun WallpaperItem(wallpaper: WallpaperEntity, onClick: () -> Unit) {
                 error = ColorPainter(Color.Gray.copy(alpha = 0.3f))
             )
             
-            // Professional Gradient Overlay for text visibility
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -110,7 +119,7 @@ fun WallpaperItem(wallpaper: WallpaperEntity, onClick: () -> Unit) {
                                 Color.Transparent,
                                 Color.Black.copy(alpha = 0.7f)
                             ),
-                            startY = 300f // Starts gradient further down
+                            startY = 300f
                         )
                     )
             )
@@ -131,10 +140,11 @@ fun WallpaperItem(wallpaper: WallpaperEntity, onClick: () -> Unit) {
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "High Res",
+                    text = wallpaper.description ?: "High Res",
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
