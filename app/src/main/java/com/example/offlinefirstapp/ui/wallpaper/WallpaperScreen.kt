@@ -41,13 +41,20 @@ fun WallpaperScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(
-                        "Wallpapers",
-                        style = MaterialTheme.typography.headlineMedium.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 0.5.sp
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            "Wallpapers",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 0.5.sp
+                            )
                         )
-                    )
+                        Text(
+                            "v5.0 - FRESH",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.refresh() }) {

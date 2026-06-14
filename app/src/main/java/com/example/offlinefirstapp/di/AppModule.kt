@@ -54,7 +54,7 @@ object AppModule {
         return Room.databaseBuilder(
             app,
             WallpaperDatabase::class.java,
-            "wallpaper_fresh_db_v4" // Absolute fresh start
+            "wallpaper_absolute_fresh_v5" // Unique name
         )
         .fallbackToDestructiveMigration()
         .build()
