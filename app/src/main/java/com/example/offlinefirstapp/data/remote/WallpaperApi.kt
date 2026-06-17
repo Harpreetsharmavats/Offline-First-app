@@ -6,7 +6,7 @@ import retrofit2.http.Query
 interface WallpaperApi {
     @GET("v2/list")
     suspend fun getWallpapers(
-        @Query("page") page: Int = 1,
+        @Query("page") page: Int = 3,
         @Query("limit") limit: Int = 30
     ): List<WallpaperDto>
 

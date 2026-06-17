@@ -1,6 +1,7 @@
 package com.example.offlinefirstapp.di
 
 import android.app.Application
+import android.util.Log
 import androidx.room.Room
 import com.example.offlinefirstapp.data.local.WallpaperDatabase
 import com.example.offlinefirstapp.data.remote.WallpaperApi
@@ -51,13 +52,17 @@ object AppModule {
     @Provides
     @Singleton
     fun provideWallpaperDatabase(app: Application): WallpaperDatabase {
-        return Room.databaseBuilder(
+        val db = Room.databaseBuilder(
             app,
             WallpaperDatabase::class.java,
-            "wallpaper_absolute_fresh_v5" // Unique name
+            "wallpaper_absolute_fresh_v5"
         )
-        .fallbackToDestructiveMigration()
-        .build()
+            .fallbackToDestructiveMigration()
+            .build()
+
+        Log.d("WallpaperRepo", "DB INSTANCE = ${db.hashCode()}")
+
+        return db
     }
 
     @Provides
