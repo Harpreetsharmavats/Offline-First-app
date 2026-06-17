@@ -5,6 +5,7 @@ import com.example.offlinefirstapp.data.local.WallpaperDao
 import com.example.offlinefirstapp.data.local.WallpaperEntity
 import com.example.offlinefirstapp.data.remote.WallpaperApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class WallpaperRepositoryImpl @Inject constructor(
@@ -42,7 +43,13 @@ class WallpaperRepositoryImpl @Inject constructor(
             
             if (entities.isNotEmpty()) {
                 dao.insertWallpapers(entities)
+
                 Log.d("WallpaperRepo", "Inserted ${entities.size} new records")
+
+                val dbData = dao.getAllWallpapers().first()
+
+                Log.d("WallpaperRepo", "DB SIZE = ${dbData.size}")
+                Log.d("WallpaperRepo", "FIRST ITEM = ${dbData.firstOrNull()}")
             } else {
                 Log.d("WallpaperRepo", "API returned empty, using mock data")
                 insertMockData()

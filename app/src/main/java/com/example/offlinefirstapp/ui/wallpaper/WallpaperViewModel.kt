@@ -1,5 +1,6 @@
 package com.example.offlinefirstapp.ui.wallpaper
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.offlinefirstapp.data.local.WallpaperEntity
@@ -26,19 +27,28 @@ class WallpaperViewModel @Inject constructor(
     val wallpapers: StateFlow<List<WallpaperEntity>> = repository.getWallpapers()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
 
+
     init {
+        viewModelScope.launch {
+            wallpapers.collect { list ->
+                Log.d("WallpaperRepo", "VM RECEIVED ${list.size}")
+            }
+        }
+
         refresh()
     }
+
 
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.update { true }
             repository.refreshWallpapers()
             _isRefreshing.update { false }
+            Log.d("WallpaperRepo", wallpapers.value.toString())
         }
     }
 
