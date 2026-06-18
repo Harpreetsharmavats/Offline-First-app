@@ -22,11 +22,10 @@ class WallpaperRepositoryImpl @Inject constructor(
     }
 
     override suspend fun refreshWallpapers() {
-        Log.d("WallpaperRepo", "Refreshing wallpapers...")
         try {
             // FORCE CLEAR before anything else
             dao.clearAll()
-            Log.d("WallpaperRepo", "Database cleared.")
+
 
             val remoteWallpapers = api.getWallpapers()
             Log.d("WallpaperRepo", "Fetched ${remoteWallpapers.size} from API")
