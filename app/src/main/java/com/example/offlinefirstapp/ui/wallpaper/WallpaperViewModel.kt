@@ -48,7 +48,6 @@ class WallpaperViewModel @Inject constructor(
             _isRefreshing.update { true }
             repository.refreshWallpapers()
             _isRefreshing.update { false }
-            Log.d("WallpaperRepo", wallpapers.value.toString())
         }
     }
 
