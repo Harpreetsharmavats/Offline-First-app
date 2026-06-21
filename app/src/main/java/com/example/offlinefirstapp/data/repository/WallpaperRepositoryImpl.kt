@@ -23,7 +23,6 @@ class WallpaperRepositoryImpl @Inject constructor(
 
     override suspend fun refreshWallpapers() {
         try {
-            // FORCE CLEAR before anything else
             dao.clearAll()
 
 
